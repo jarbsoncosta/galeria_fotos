@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galeria de Fotos</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .section-gallery {
+        max-width: 1200px;
+      }
+      .section-gallery .group-buttons {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0 1.5rem;
+      }
+      .section-gallery .group-buttons button {
+        min-width: 150px;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: 1s;
+        border-radius: 5px;
+        border: 1px solid #397fd4;
+      }
+      .section-gallery .group-buttons button:hover {
+        background: #397fd4;
+        color: white;
+        border: 1px solid #397fd4;
+      }
+      .gallery {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .gallery-item {
+        position: relative;
+        overflow: hidden;
+        width: 285px;
+        height: 250px;
+        transition: opacity 0.3s ease;
+      }
+
+      .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+        border-radius: 10px;
+        transition: 1s;
+      }
+      .gallery-item:hover img {
+        filter: brightness(
+          50%
+        ); /* Diminui o brilho para criar o efeito de escurecimento */
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        overflow: auto;
+
+        box-shadow: 0 4px 8px rgba(8, 8, 8, 0.2);
+        position: relative;
+      }
+
+      .modal-content img {
+        width: 100%;
+        height: auto;
+      }
+
+      /* Estilos para os botões Próxima e Anterior dentro do modal */
+      .modal-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 48px;
+        height: 48px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-size: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .modal-button.next {
+        right: 0;
+      }
+
+      .modal-button.prev {
+        left: 0;
+      }
+      .view-all-link {
+        text-align: center;
+        margin-top: 10px;
+        display: block;
+        text-decoration: none;
+        color: dimgrey;
+      }
+
+      /* Estilo para o botão selecionado */
+      .selected {
+        background-color: #007bff; /* Cor de fundo azul (ou outra cor que você preferir) */
+        color: #fff; /* Cor do texto branca (ou outra cor que contraste bem) */
+      }
+    </style>
+  </head>
+  <body>
+    <section class="section-gallery">
+      <!-- Botões para alternar galerias -->
+      <div class="group-buttons">
+        <button id="sanJoaoButton" onclick="showSanJoaoPhotos()">São João</button>
+        <button id="natalButton" onclick="showNatalPhotos()">Natal</button>
+         <button id="setembroAmareloButton" onclick="showSetembroAmarelo()">Setembro amarelo</button>
+      </div>
+
+      <div class="gallery" id="photoGallery"></div>
+
+      <!-- Modal -->
+      <div id="imageModal" class="modal">
+        <div class="modal-content">
+          <img id="modalImage" src="" alt="Imagem Ampliada" />
+          <button class="modal-button prev" onclick="showPreviousImage()">
+            &#10094;
+          </button>
+          <button class="modal-button next" onclick="showNextImage()">
+            &#10095;
+          </button>
+        </div>
+      </div>
+
+      <script>
+        const photoGallery = document.getElementById("photoGallery");
+        const modalImage = document.getElementById("modalImage");
+        const modal = document.getElementById("imageModal");
+        const sanJoaoImages = [
+          "imagens/sanjoao/1.jpg",
+          "imagens/sanjoao/2.jpg",
+          "imagens/sanjoao/3.jpg",
+          "imagens/sanjoao/1.jpg",
+          "imagens/sanjoao/4.jpg",
+          "imagens/sanjoao/3.jpg",
+          "imagens/sanjoao/1.jpg",
+          "imagens/sanjoao/2.jpg",
+          "imagens/sanjoao/3.jpg",
+          // Adicione mais imagens do São João aqui
+        ];
+        const natalImages = [
+          "imagens/natal/1.jpg",
+          "imagens/natal/2.jpg",
+          "imagens/natal/3.jpg",
+          "imagens/natal/4.jpg",
+          "imagens/natal/1.jpg",
+          "imagens/natal/2.jpg",
+          "imagens/natal/3.jpg",
+          "imagens/natal/4.jpg",
+          "imagens/natal/1.jpg",
+          "imagens/natal/2.jpg",
+          "imagens/natal/1.jpg",
+          "imagens/natal/2.jpg",
+          // Adicione mais imagens do Natal aqui
+        ];
+
+        const setembroAmarelo = [
+          "imagens/setembroAmarelo/1.jpeg",
+          "imagens/setembroAmarelo/2.jpg",
+          "imagens/setembroAmarelo/3.jpeg",
+          "imagens/setembroAmarelo/4.jpeg",
+          // Adicione mais imagens do Setembro amarelo
+        ];
+        let currentImages = [];
+        let currentImageIndex = 0;
+
+        function showImageInModal(imageSrc) {
+          modalImage.src = imageSrc;
+          modal.style.display = "flex";
+        }
+
+        function showSanJoaoPhotos() {
+          currentImages = sanJoaoImages;
+          currentImageIndex = 0;
+          displayImages();
+
+          // Adicione a classe "selected" ao botão de São João e remova-a do botão de Natal
+          sanJoaoButton.classList.add("selected");
+          natalButton.classList.remove("selected");
+          setembroAmareloButton.classList.remove("selected");
+          
+        }
+
+        function showSetembroAmarelo() {
+          currentImages = setembroAmarelo;
+          currentImageIndex = 0;
+          displayImages();
+
+          // Adicione a classe "selected" ao botão de São João e remova-a do botão de Natal
+          setembroAmareloButton.classList.add("selected");
+          sanJoaoButton.classList.remove("selected");
+          natalButton.classList.remove("selected");
+        }
+
+        function showNatalPhotos() {
+          currentImages = natalImages;
+          currentImageIndex = 0;
+          displayImages();
+
+          // Adicione a classe "selected" ao botão de São João e remova-a do botão de Natal
+          natalButton.classList.add("selected");
+          sanJoaoButton.classList.remove("selected");
+          setembroAmareloButton.classList.remove("selected");
+        }
+
+        function displayImages() {
+          photoGallery.innerHTML = "";
+          const maxImages = 8; // Limite o número máximo de imagens a exibir
+          const totalImages = currentImages.length;
+
+          currentImages.slice(0, maxImages).forEach((imageSrc, index) => {
+            const galleryItem = document.createElement("div");
+            galleryItem.classList.add("gallery-item");
+            const img = document.createElement("img");
+            img.src = imageSrc;
+            img.alt = "Foto";
+            img.onclick = () => {
+              currentImageIndex = index;
+              showImageInModal(imageSrc);
+            };
+            galleryItem.appendChild(img);
+            photoGallery.appendChild(galleryItem);
+          });
+
+          if (totalImages > maxImages) {
+            // Se houver mais de 8 imagens, adicione um link para uma página com todas as imagens
+            const viewAllLink = document.createElement("a");
+            viewAllLink.href = "pagina_com_todas_as_imagens.html"; // Personalize o link
+            viewAllLink.textContent = "Ver todas as imagens";
+            viewAllLink.classList.add("view-all-link");
+            photoGallery.appendChild(viewAllLink);
+          }
+        }
+
+        function showPreviousImage() {
+          currentImageIndex =
+            (currentImageIndex - 1 + currentImages.length) %
+            currentImages.length;
+          showImageInModal(currentImages[currentImageIndex]);
+        }
+
+        function showNextImage() {
+          currentImageIndex = (currentImageIndex + 1) % currentImages.length;
+          showImageInModal(currentImages[currentImageIndex]);
+        }
+
+        // Inicialmente, mostre a galeria de São João
+        showSanJoaoPhotos();
+        // Adicione um evento para fechar o modal quando a tecla "Esc" for pressionada
+        document.addEventListener("keydown", function (event) {
+          if (event.key === "Escape" && modal.style.display === "flex") {
+            closeModal();
+          }
+        });
+
+        // Adicione um evento para fechar o modal quando o usuário clicar fora dele
+        modal.addEventListener("click", function (event) {
+          if (event.target === modal) {
+            closeModal();
+          }
+        });
+
+        function closeModal() {
+          modal.style.display = "none";
+        }
+        // Adicione um evento para navegar entre as fotos usando as setas do teclado
+        document.addEventListener("keydown", function (event) {
+          if (modal.style.display === "flex") {
+            if (event.key === "ArrowLeft") {
+              showPreviousImage();
+            } else if (event.key === "ArrowRight") {
+              showNextImage();
+            } else if (event.key === "Escape") {
+              closeModal();
+            }
+          }
+        });
+      </script>
+    </section>
+  </body>
+</html>
